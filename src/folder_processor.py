@@ -17,7 +17,9 @@ class FolderProcessor(ProcessorBase):
         return self.path + '.mp4'
 
     def process_main(self):
-        tsfile = codecs.open(os.path.join(self.path, 'timestamps.txt'), 'w', encoding='utf-8')
+        tsfile = codecs.open(
+            os.path.join(os.path.dirname(self.output_fname), 'timestamps.txt'),
+            'w', encoding='utf-8')
         flist = codecs.open('mylist.txt', 'w', encoding='utf-8')
         i = 1
         timecounter = 0
