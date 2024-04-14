@@ -36,18 +36,16 @@ class AudioProcessor:
         Renderer(self).initialize()
 
         self.logger.log('creating %s threads to render %s frames (%s fps)' % (self.thrn, self.frames, self.fps))
-        monitor_thread = MonitorThread(self)
         render_threads = [RenderThread(self, i) for i in range(self.thrn)]
         for thread in render_threads:
             thread.start()
+        ffmpeg = FFmpegThread(self)
+        ffmpeg.start()
+        monitor_thread = MonitorThread(self, ffmpeg)
+
         with open('exported.tmp','wb') as file:
             for frame in range(self.frames):
                 file.write(render_threads[frame % self.thrn].get_next_frame())
-                monitor_thread.frame_exported()
-
-        ffmpeg = FFmpegThread(self)
-        ffmpeg.start()
-        monitor_thread.start_monitoring_ffmpeg(ffmpeg)
         ffmpeg.join()
         monitor_thread.join()
 
