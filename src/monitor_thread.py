@@ -54,4 +54,5 @@ class MonitorThread:
     def join(self):
         self.running = False
         self.thread.join()
+        self.print_progress()
         print()

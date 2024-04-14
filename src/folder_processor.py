@@ -3,10 +3,9 @@ import os
 import subprocess
 import time
 from math import ceil
-from shutil import rmtree
+import tempfile
 
 from logger import Logger
-from common import mkdir
 from audio_processor import AudioProcessor
 from common import seconds_to_string
 
@@ -23,8 +22,9 @@ class FolderProcessor:
         start = time.time()
         tsfile = codecs.open('timestamps.txt', 'w', encoding='utf-8')
 
-        mkdir('tmp_folder')
-        os.chdir('tmp_folder')
+        tmp_dir = tempfile.TemporaryDirectory()
+        old_cwd = os.getcwd()
+        os.chdir(tmp_dir.name)
         flist = codecs.open('mylist.txt', 'w', encoding='utf-8')
         i = 1
         timecounter = 0
@@ -52,13 +52,14 @@ class FolderProcessor:
         tsfile.close()
         self.logger.log('combining files')
 
-        if subprocess.run(['ffmpeg', '-safe', '0', '-f', 'concat', '-i', 'mylist.txt',
+        if subprocess.run(['ffmpeg', '-safe', '0', '-f', 'concat', '-i', flist.name,
                            '-c', 'copy', '-y', self.output_fname],
                           stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode:
             self.logger.log('error during file concatenation.')
+
         self.logger.log('removing temporary files')
-        os.chdir('..')
-        rmtree('tmp_folder')
+        os.chdir(old_cwd)
+        tmp_dir.cleanup()
 
         end = time.time()
         self.logger.log('finished in', seconds_to_string(end - start))

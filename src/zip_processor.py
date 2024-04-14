@@ -1,8 +1,8 @@
-import os.path
-from shutil import rmtree
+import tempfile
 from zipfile import ZipFile
 from logger import Logger
 from folder_processor import FolderProcessor
+
 
 class ZipProcessor:
     def __init__(self, path, output_fname=None):
@@ -12,10 +12,10 @@ class ZipProcessor:
 
     def process(self):
         self.logger.log('extracting')
-        dest = os.path.join(os.path.dirname(self.path), 'tmp_zip')
+        tmp_dir = tempfile.TemporaryDirectory()
         with ZipFile(self.path, 'r') as zip_ref:
-            zip_ref.extractall(dest)
-        FolderProcessor(dest, self.output_fname).process()
+            zip_ref.extractall(tmp_dir.name)
+        FolderProcessor(tmp_dir.name, self.output_fname).process()
 
         self.logger.log('removing temporary files')
-        rmtree(dest)
+        tmp_dir.cleanup()

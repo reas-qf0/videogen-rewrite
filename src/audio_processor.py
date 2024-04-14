@@ -1,7 +1,7 @@
 import math
 import os
 import time
-from shutil import rmtree
+import tempfile
 
 from logger import Logger
 from metadata import Metadata
@@ -9,7 +9,7 @@ from render_thread import RenderThread
 from monitor_thread import MonitorThread
 from ffmpeg_thread import FFmpegThread
 from renderer import Renderer
-from common import mkdir, seconds_to_string
+from common import seconds_to_string
 
 
 class AudioProcessor:
@@ -30,8 +30,9 @@ class AudioProcessor:
         start = time.time()
 
         self.logger.log('init rendering')
-        mkdir('tmp_audio')
-        os.chdir('tmp_audio')
+        tmp_dir = tempfile.TemporaryDirectory()
+        old_cwd = os.getcwd()
+        os.chdir(tmp_dir.name)
         Renderer(self).initialize()
 
         self.logger.log('creating %s threads to render %s frames (%s fps)' % (self.thrn, self.frames, self.fps))
@@ -51,8 +52,8 @@ class AudioProcessor:
         monitor_thread.join()
 
         self.logger.log('removing temporary files')
-        os.chdir('..')
-        rmtree('tmp_audio')
+        os.chdir(old_cwd)
+        tmp_dir.cleanup()
 
         end = time.time()
         self.logger.log('finished in', seconds_to_string(end - start))
