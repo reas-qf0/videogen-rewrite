@@ -1,6 +1,6 @@
 import importlib
 import subprocess
-from sys import argv
+import sys
 from os import path
 
 
@@ -21,6 +21,8 @@ if __name__ == "__main__":
             print('error: module %s not installed' % module)
             exit(1)
 
-    target_file = path.abspath(' '.join(argv[1:]))
+    sys.path.append(path.dirname(__file__))
+
+    target_file = path.abspath(' '.join(sys.argv[1:]))
     from process import process
     exit(process(target_file))

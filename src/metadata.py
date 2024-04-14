@@ -16,6 +16,7 @@ class Metadata:
                 return supported[format](fname)
         return None
 
+
 class MP3Metadata(Metadata):
     def __init__(self, fname):
         super().__init__(fname)

@@ -14,7 +14,7 @@ def process(fpath):
         from zip_processor import ZipProcessor
         processor = ZipProcessor(fpath)
     else:
-        from audio_processor import AudioProcessor
+        from src.audio_processor.audio_processor import AudioProcessor
         try:
             processor = AudioProcessor(fpath)
         except ValueError:

@@ -1,21 +1,17 @@
-import tempfile
 from zipfile import ZipFile
-from logger import Logger
 from folder_processor import FolderProcessor
+from processor_base import ProcessorBase
 
 
-class ZipProcessor:
+class ZipProcessor(ProcessorBase):
     def __init__(self, path, output_fname=None):
-        self.path = path
-        self.logger = Logger(path)
-        self.output_fname = '.'.join(path.split('.')[:-1]) + '.mp4' if output_fname is None else output_fname
+        super().__init__(path, output_fname)
 
-    def process(self):
+    def default_name(self):
+        return '.'.join(self.path.split('.')[:-1]) + '.mp4'
+
+    def process_main(self):
         self.logger.log('extracting')
-        tmp_dir = tempfile.TemporaryDirectory()
         with ZipFile(self.path, 'r') as zip_ref:
-            zip_ref.extractall(tmp_dir.name)
-        FolderProcessor(tmp_dir.name, self.output_fname).process()
-
-        self.logger.log('removing temporary files')
-        tmp_dir.cleanup()
+            zip_ref.extractall()
+        FolderProcessor('.', self.output_fname).process()

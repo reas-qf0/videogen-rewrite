@@ -1,6 +1,6 @@
 import io
 import multiprocessing
-from renderer import Renderer
+from .renderer import Renderer
 
 
 class RenderThread:
