@@ -1,6 +1,5 @@
 import io
 import multiprocessing
-import time
 from renderer import Renderer
 
 
