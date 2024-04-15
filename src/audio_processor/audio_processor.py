@@ -1,3 +1,4 @@
+import tempfile
 from math import ceil
 
 from processor_base import ProcessorBase
@@ -34,12 +35,13 @@ class AudioProcessor(ProcessorBase):
         render_threads = [RenderThread(self, i) for i in range(self.thrn)]
         for thread in render_threads:
             thread.start()
+
         ffmpeg = FFmpegThread(self)
         ffmpeg.start()
         monitor_thread = MonitorThread(self, ffmpeg)
 
-        with open('exported.tmp', 'wb') as file:
-            for frame in range(self.frames):
-                file.write(render_threads[frame % self.thrn].get_next_frame())
+        for frame in range(self.frames):
+            ffmpeg.feed(render_threads[frame % self.thrn].get_next_frame())
+        ffmpeg.thread.stdin.close()
         ffmpeg.join()
         monitor_thread.join()

@@ -8,8 +8,12 @@ required_modules = ['PIL', 'mutagen']
 
 
 if __name__ == "__main__":
+    sys.path.append(path.dirname(__file__))
+    slice_index = Config.init(sys.argv)
+    target_file = path.abspath(' '.join(sys.argv[slice_index:]))
+
     try:
-        subprocess.Popen(['ffmpeg'], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        subprocess.Popen([Config.values['ffmpeg_path']], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     except FileNotFoundError:
         print('error: ffmpeg not installed or not found at given path')
         exit(1)
@@ -21,9 +25,5 @@ if __name__ == "__main__":
             print('error: module %s not installed' % module)
             exit(1)
 
-    sys.path.append(path.dirname(__file__))
-
-    slice_index = Config.init(sys.argv)
-    target_file = path.abspath(' '.join(sys.argv[slice_index:]))
     from process import process
     exit(process(target_file))

@@ -1,6 +1,8 @@
 import os
 import json
 
+path = lambda x: os.path.abspath(x)
+
 default_values = {
     "config_file": "config.json",
     "ffmpeg_path": "ffmpeg",
@@ -9,11 +11,11 @@ default_values = {
 }
 
 types = {
-    "config_file": str,
+    "config_file": path,
     "ffmpeg_path": str,
     "fps": float,
     "thrn": int,
-    "font": str
+    "font": path
 }
 
 
@@ -22,10 +24,7 @@ class Config:
 
     @staticmethod
     def set(key, value):
-        if types[key] == str and os.path.exists(value):
-            Config.values[key] = os.path.abspath(value)
-        else:
-            Config.values[key] = types[key](value)
+        Config.values[key] = types[key](value)
 
     @staticmethod
     def init(argv):
