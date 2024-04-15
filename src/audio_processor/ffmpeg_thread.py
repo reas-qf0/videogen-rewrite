@@ -3,7 +3,6 @@ import subprocess
 
 class FFmpegThread:
     def __init__(self, parent):
-        self.parent = parent
         self.args = [
             'ffmpeg', '-progress', '-', '-nostats', '-stats_period', '0.1',
             '-framerate', str(parent.fps), '-i', 'exported.tmp', '-i', parent.metadata.fname,

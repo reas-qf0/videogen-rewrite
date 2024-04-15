@@ -11,7 +11,6 @@ from common import seconds_to_string
 class FolderProcessor(ProcessorBase):
     def __init__(self, path, output_fname=None):
         super().__init__(path, output_fname)
-        self.fps = 30
 
     def default_name(self):
         return self.path + '.mp4'
@@ -34,11 +33,11 @@ class FolderProcessor(ProcessorBase):
             if not processor.process():
                 flist.write('file \'%s\'\n' % target_fname)
                 tsfile.write('%s %s - %s\n' % (
-                    seconds_to_string(timecounter / self.fps),
+                    seconds_to_string(timecounter / processor.fps),
                     processor.metadata.artist,
                     processor.metadata.title
                 ))
-                timecounter += int(ceil(processor.metadata.length * self.fps))
+                timecounter += int(ceil(processor.metadata.length * processor.fps))
                 i += 1
             else:
                 self.logger.log('error during processing. Ignoring.')

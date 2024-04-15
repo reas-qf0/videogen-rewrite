@@ -2,13 +2,19 @@ import os
 import subprocess
 from PIL import Image, ImageFilter, ImageFont, ImageDraw
 from common import seconds_to_string
+from config import Config
 
 
 class Renderer:
     def __init__(self, parent):
         self.parent = parent
         self.metadata = parent.metadata
-        self.font = '/media/yoo/Новый том/progaming/videogen-rewrite/resources/Arial Unicode MS.ttf'
+        try:
+            self.font = Config.values['font']
+        except KeyError:
+            self.parent.logger.log('required parameter "font" not provided. Check config.json or use the --font '
+                                   'parameter.')
+            raise
 
     def initialize(self):
         args = ['ffmpeg', '-i', self.metadata.fname, 'cover.png']

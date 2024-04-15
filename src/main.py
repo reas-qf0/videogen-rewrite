@@ -2,7 +2,7 @@ import importlib
 import subprocess
 import sys
 from os import path
-
+from config import Config
 
 required_modules = ['PIL', 'mutagen']
 
@@ -23,6 +23,7 @@ if __name__ == "__main__":
 
     sys.path.append(path.dirname(__file__))
 
-    target_file = path.abspath(' '.join(sys.argv[1:]))
+    slice_index = Config.init(sys.argv)
+    target_file = path.abspath(' '.join(sys.argv[slice_index:]))
     from process import process
     exit(process(target_file))
