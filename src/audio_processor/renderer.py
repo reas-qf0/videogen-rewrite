@@ -8,7 +8,6 @@ class Renderer:
     def __init__(self, parent):
         self.parent = parent
         self.metadata = parent.metadata
-        self.top_gradient = '/media/yoo/Новый том/progaming/videogen-rewrite/resources/topgradient.png'
         self.font = '/media/yoo/Новый том/progaming/videogen-rewrite/resources/Arial Unicode MS.ttf'
 
     def initialize(self):
@@ -30,8 +29,16 @@ class Renderer:
         rgba.save('cover3.png')
         image.close()
 
+        topgradient = Image.new('RGBA', (1, 320), '#919191AE')
+        draw = ImageDraw.Draw(topgradient)
+        for x in range(18):
+            color = int(145 + (255 - 145) / 18 * x)
+            alpha = int(174 / 18 * (18 - x))
+            draw.point([0, 302 + x], fill=(color, color, color, alpha))
+        topgradient = topgradient.resize((1920, 320))
+
         image = Image.open('cover3.png')
-        image.alpha_composite(Image.open(self.top_gradient))
+        image.alpha_composite(topgradient)
         image.paste(cover, (60, 60))
         draw = ImageDraw.Draw(image)
 
