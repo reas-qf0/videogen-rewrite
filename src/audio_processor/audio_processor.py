@@ -1,4 +1,3 @@
-import tempfile
 from math import ceil
 
 from processor_base import ProcessorBase
@@ -26,9 +25,8 @@ class AudioProcessor(ProcessorBase):
         return '.'.join(self.path.split('.')[:-1]) + '.mp4'
 
     def process_main(self):
-        try:
-            Renderer(self).initialize()
-        except KeyError:
+        if not Renderer(self).initialize():
+            self.logger.log('error in init phase. Ignoring.')
             return
 
         self.logger.log('creating %s threads to render %s frames (%s fps)' % (self.thrn, self.frames, self.fps))

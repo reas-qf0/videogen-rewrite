@@ -8,20 +8,30 @@ from config import Config
 class Renderer:
     def __init__(self, parent):
         self.parent = parent
-        self.metadata = parent.metadata
+
+    def init_vars(self):
+        self.metadata = self.parent.metadata
         try:
             self.font = Config.values['font']
         except KeyError:
             self.parent.logger.log('required parameter "font" not provided. Check config.json or use the --font '
                                    'parameter.')
-            raise
+            return False
+        return True
 
     def initialize(self):
+        if not self.init_vars():
+            return False
+
         args = ['ffmpeg', '-i', self.metadata.fname, 'cover.png']
         subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE).wait()
         if not os.path.exists('cover.png'):
-            self.parent.logger.log('cover extraction error. Ignoring.')
-            return
+            self.parent.logger.log('cover extraction error')
+            return False
+
+        if not os.path.isfile(self.font):
+            self.parent.logger.log('error: no font file found at specified location')
+            return False
 
         cover = Image.open('cover.png')
         cover.thumbnail((200, 200))
@@ -61,8 +71,11 @@ class Renderer:
                   text,
                   font=font, fill='#DDDDDD')
         image.convert('RGB').save('base.jpg')
+        return True
 
     def generate_frame(self, frame_num):
+        self.init_vars()
+
         seconds = frame_num / self.parent.fps
         length = self.metadata.length
         image = Image.open('base.jpg')
