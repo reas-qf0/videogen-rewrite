@@ -6,6 +6,7 @@ class FFmpegThread:
         self.args = [
             'ffmpeg', '-progress', '-', '-nostats', '-stats_period', '0.1',
             '-framerate', str(parent.fps), '-i', '-', '-i', parent.metadata.fname,
+            '-vcodec', 'libx264', '-crf', '27', '-preset', 'ultrafast',
             '-vsync', '2', '-y', parent.output_fname
         ]
         self.thread = None
